@@ -4,6 +4,7 @@ const button = document.querySelector(".btn")
 const alertPlaceholder = document.querySelector('#alert-placeholder');
 const pair = document.querySelector(".par")
 const createTable = document.querySelector(".tabulka")
+
 let score = 0;
 let numClick = 0;
 let numCorrect = 0;
@@ -25,7 +26,7 @@ function localStor(scoreInput) {
 //Načte poslední doažené skóre
 function localStorLoad() {
     let loadScore = JSON.parse(localStorage.getItem("skore"))
-    if (loadScore === null || loadScore.length === 0){
+    if (!loadScore?.length){
         pair.innerHTML = "<hr /> Pojďte si zahrát pexeso 😊"
     } else {
         pair.innerHTML = "<hr /> Pokračujte ve hře 😊"
@@ -119,13 +120,13 @@ randomArray(arrayRandom);
 
         if (isTurned) {
             // Karta se otočí zpět na rub
-            barva(`cislo${numberID}`, `cislo${numberID}`);
+            turnCard(`cislo${numberID}`, `cislo${numberID}`);
             return;
         }
         if (numClick < 2) {
             id.push(numberID) //Přidávání vyříznutých čísel ID do pole
             arrayNum.push(click) //Přidání čísla karty do pole
-            barva(`cislo${numberID}`, `cislo${numberID}`); // Otočení karty na líc
+            turnCard(`cislo${numberID}`, `cislo${numberID}`); // Otočení karty na líc
             numClick++; // Inkrementace počtu kliknutí
         }
         if (numClick === 2){
@@ -147,7 +148,7 @@ randomArray(arrayRandom);
                     table();
                 }
             } else {
-                barva(`cislo${id[0]}`, `cislo${id[1]}`);
+                turnCard(`cislo${id[0]}`, `cislo${id[1]}`);
             }
             arrayNum = [];
             id = [];
@@ -157,7 +158,7 @@ randomArray(arrayRandom);
     }
     })
 })
-function barva(card1, card2) {
+function turnCard(card1, card2) {
     const element1 = document.querySelector(`#${card1}`);
     const element2 = document.querySelector(`#${card2}`);
 
@@ -183,6 +184,4 @@ function barva(card1, card2) {
         element2.classList.remove("flipped")
     }
 }
-button.addEventListener("click", () => {
-    location.reload();
-});
+button.addEventListener("click", () => {location.reload()});
