@@ -34,14 +34,14 @@ overlay.addEventListener("click", closeModal);
 // Ukládání skóre do localStorage
 function localStor(scoreInput) {
   arrayScore.push(scoreInput); // Přidá nové skóre do pole
-  if (arrayScore.length === 5) {
-    // Max. 5 záznamů, pak se pole vynuluje
+  if (arrayScore.length === 5) { // **********Max. 5 záznamů, pak se pole vynuluje**********
     const minValue = Math.min(...arrayScore);
     const minIndex = arrayScore.indexOf(minValue) + 1;
     let paragraph = document.createElement("p");
     paragraph.innerHTML = `Nejméně otočených dvojic karet: ${minValue} bylo ve hře č. ${minIndex}`;
     modal.appendChild(paragraph);
     pair.innerHTML = ``;
+    createTable.remove();
     openModal();
     arrayScore = [];
   }
@@ -136,7 +136,6 @@ function randomArray(arrayRandom) {
       arrayRandom[i],
     ]; // Prohození hodnot
   }
-  return arrayRandom;
 }
 randomArray(arrayRandom);
 idSelect.forEach((karta, index) => {
@@ -178,7 +177,7 @@ numChoose.forEach((num) => {
             alertPlaceholder.classList.add("alert", "alert-success", "fs-5");
             alertPlaceholder.classList.remove("d-none");
             document.querySelector(".btn-znovu").classList.remove("d-none");
-            alertPlaceholder.textContent = "Konec hry 🥳";
+            arrayScore.length === 0 ? alertPlaceholder.textContent = `Konec série 🏆`: alertPlaceholder.textContent = `Konec ${arrayScore.length}. hry 🥳`;
             createTable.classList.remove("d-none");
             table();
           }
