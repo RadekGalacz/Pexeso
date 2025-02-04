@@ -8,6 +8,7 @@ const modal = document.querySelector(".modal");
 const overlay = document.querySelector(".overlay");
 const closeModalCross = document.querySelector(".close-modal");
 const btnOpenModal = document.querySelectorAll(".show-modal");
+const buttonContinue = document.querySelector(".btn-continue ")
 
 let score = 0;
 let numClick = 0;
@@ -34,7 +35,7 @@ overlay.addEventListener("click", closeModal);
 // Ukládání skóre do localStorage
 function localStor(scoreInput) {
   arrayScore.push(scoreInput); // Přidá nové skóre do pole
-  if (arrayScore.length === 5) { // **********Max. 5 záznamů, pak se pole vynuluje**********
+  if (arrayScore.length === 2) { // **********Max. 5 záznamů, pak se pole vynuluje**********
     const minValue = Math.min(...arrayScore);
     const minIndex = arrayScore.indexOf(minValue) + 1;
     let paragraph = document.createElement("p");
@@ -42,6 +43,7 @@ function localStor(scoreInput) {
     modal.appendChild(paragraph);
     pair.innerHTML = ``;
     createTable.remove();
+    buttonContinue.innerText = "Hrát znovu 🔄"
     openModal();
     arrayScore = [];
   }
@@ -177,7 +179,7 @@ numChoose.forEach((num) => {
             alertPlaceholder.classList.add("alert", "alert-success", "fs-5");
             alertPlaceholder.classList.remove("d-none");
             document.querySelector(".btn-znovu").classList.remove("d-none");
-            arrayScore.length === 0 ? alertPlaceholder.textContent = `Konec série 🏆`: alertPlaceholder.textContent = `Konec ${arrayScore.length}. hry 🥳`;
+            arrayScore.length === 0 ? alertPlaceholder.textContent = `Konec série🏆`: alertPlaceholder.textContent = `Konec ${arrayScore.length}. hry`;
             createTable.classList.remove("d-none");
             table();
           }
