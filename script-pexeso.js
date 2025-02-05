@@ -8,7 +8,7 @@ const modal = document.querySelector(".modal");
 const overlay = document.querySelector(".overlay");
 const closeModalCross = document.querySelector(".close-modal");
 const btnOpenModal = document.querySelectorAll(".show-modal");
-const buttonContinue = document.querySelector(".btn-continue ")
+const buttonContinue = document.querySelector(".btn-continue ");
 
 let score = 0;
 let numClick = 0;
@@ -17,25 +17,36 @@ let blocked = false;
 let arrayNum = []; //Čísla karet
 let id = []; //ID karet
 let guessID = []; //Pole - uhodnuté ID karet
-const arrayRandom = []; //Vygenerovaná náhodná čísla karet
+const arrayOfNum = []; //Pole čísel karet podle jejich class
 let arrayScore = JSON.parse(localStorage.getItem("skore")) || []; // Načíst existující skóre z localStorage, nebo použít prázdné pole
 
-//MODAL
-function closeModal() {
-  modal.classList.add("d-none");
-  overlay.classList.add("d-none");
+//Naplnění pole čísly pro identifikaci karet
+for (let i = 1; arrayOfNum.length < numChoose.length; i++) {
+  arrayOfNum.push((i % (numChoose.length / 2)) + 1);
 }
-function openModal() {
-  modal.classList.remove("d-none");
-  overlay.classList.remove("d-none");
+//zamíchání pole (random)
+function randomArray(arrayOfNum) {
+  for (let i = arrayOfNum.length - 1; i > 0; i--) {
+    const randomIndex = Math.floor(Math.random() * (i + 1));
+    [arrayOfNum[i], arrayOfNum[randomIndex]] = [
+      arrayOfNum[randomIndex],
+      arrayOfNum[i],
+    ]; // Prohození hodnot
+  }
 }
-closeModalCross.addEventListener("click", closeModal);
-overlay.addEventListener("click", closeModal);
 
-// Ukládání skóre do localStorage
+//Změna class karet náhodnými čísly
+randomArray(arrayOfNum);
+idSelect.forEach((karta, index) => {
+  //Iterace všemi kartami přes jeji třídy
+  karta.className = `karta${arrayOfNum[index]}`;
+});
+
+// Ukládání skóre do localStorage + výpis hry
 function localStor(scoreInput) {
   arrayScore.push(scoreInput); // Přidá nové skóre do pole
-  if (arrayScore.length === 2) { // **********Max. 5 záznamů, pak se pole vynuluje**********
+  if (arrayScore.length === 5) {
+    // **********Max. 5 záznamů, pak se pole vynuluje**********
     const minValue = Math.min(...arrayScore);
     const minIndex = arrayScore.indexOf(minValue) + 1;
     let paragraph = document.createElement("p");
@@ -43,12 +54,13 @@ function localStor(scoreInput) {
     modal.appendChild(paragraph);
     pair.innerHTML = ``;
     createTable.remove();
-    buttonContinue.innerText = "Hrát znovu 🔄"
+    buttonContinue.innerText = "Hrát znovu 🔄";
     openModal();
     arrayScore = [];
   }
   localStorage.setItem("skore", JSON.stringify(arrayScore)); // Uložit pole zpět do localStorage
 }
+
 //Načte poslední doažené skóre
 function localStorLoad() {
   let loadScore = JSON.parse(localStorage.getItem("skore"));
@@ -61,6 +73,18 @@ function localStorLoad() {
   }
 }
 localStorLoad();
+
+//MODAL
+function closeModal() {
+  modal.classList.add("d-none");
+  overlay.classList.add("d-none");
+}
+function openModal() {
+  modal.classList.remove("d-none");
+  overlay.classList.remove("d-none");
+}
+closeModalCross.addEventListener("click", closeModal);
+overlay.addEventListener("click", closeModal);
 
 function table() {
   //Vymaže již vytvořenou tabulku pro zabránění jejimu opakování
@@ -125,29 +149,9 @@ function table() {
   }
 }
 
-//Naplnění pole čísly pro identifikaci karet
-for (let i = 1; arrayRandom.length < numChoose.length; i++) {
-  arrayRandom.push((i % (numChoose.length / 2)) + 1);
-}
-//zamíchání pole (random)
-function randomArray(arrayRandom) {
-  for (let i = arrayRandom.length - 1; i > 0; i--) {
-    const randomIndex = Math.floor(Math.random() * (i + 1));
-    [arrayRandom[i], arrayRandom[randomIndex]] = [
-      arrayRandom[randomIndex],
-      arrayRandom[i],
-    ]; // Prohození hodnot
-  }
-}
-randomArray(arrayRandom);
-idSelect.forEach((karta, index) => {
-  //Iterace všemi kartami přes jeji třídy
-  karta.className = `karta${arrayRandom[index]}`; //Změna class karet náhodnými čísly
-});
 numChoose.forEach((num) => {
   num.addEventListener("click", (event) => {
     if (blocked) return;
-
     const click = event.target.classList.value.slice(-1); //přístup k číslu classy
     const clickID = event.target.id; //Přístup k ID karty
     const numberID = clickID.slice(-1); //Vyříznutí čísla ID z karty
@@ -179,7 +183,9 @@ numChoose.forEach((num) => {
             alertPlaceholder.classList.add("alert", "alert-success", "fs-5");
             alertPlaceholder.classList.remove("d-none");
             document.querySelector(".btn-znovu").classList.remove("d-none");
-            arrayScore.length === 0 ? alertPlaceholder.textContent = `Konec série🏆`: alertPlaceholder.textContent = `Konec ${arrayScore.length}. hry`;
+            arrayScore.length === 0
+              ? (alertPlaceholder.textContent = `Konec série🏆`)
+              : (alertPlaceholder.textContent = `Konec ${arrayScore.length}. hry`);
             createTable.classList.remove("d-none");
             table();
           }
@@ -194,6 +200,7 @@ numChoose.forEach((num) => {
     }
   });
 });
+
 function turnCard(card1, card2) {
   const element1 = document.querySelector(`#${card1}`);
   const element2 = document.querySelector(`#${card2}`);
